@@ -1,0 +1,7 @@
+# Uso de Inteligência Artificial no Projeto
+
+Este documento regista como ferramentas de IA são utilizadas no desenvolvimento do MonitorIA.
+
+## Aplicação
+- **Prototipagem e Modelagem:** Auxílio na estruturação das Histórias de Utilizador (BDD), matriz de riscos e apoio no refatoramento de código.
+- **Modelos Preditivos:** Integração de regras/algoritmos preditivos para identificação de risco de evasão dos alunos monitorizados.
