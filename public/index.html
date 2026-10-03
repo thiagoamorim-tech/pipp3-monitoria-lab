@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MonitorIA - Esqueleto Funcional</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #0B1E4B;
+            color: #FFFFFF;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 1rem;
+        }
+        .card {
+            background-color: #142A6B;
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 { color: #A5B4FC; margin-bottom: 0.5rem; }
+        p { color: #CBD5E1; margin-top: 0.5rem; }
+        #status-box {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background-color: #0B1E4B;
+            border-radius: 0.5rem;
+            border-left: 5px solid #34D399;
+            text-align: left;
+        }
+        #status-box.loading { border-left-color: #F97316; }
+        #status-box.error { border-left-color: #EF4444; }
+        #status-box pre {
+            background-color: #050D2E;
+            padding: 1rem;
+            border-radius: 0.25rem;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: #E2E8F0;
+        }
+        footer { margin-top: 2rem; font-size: 0.8rem; color: #64748B; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>MonitorIA</h1>
+        <p>Plataforma Gamificada com IA Preditiva para Gestao de Monitores</p>
+        <div id="status-box" class="loading">
+            <h3>Status do Esqueleto</h3>
+            <p id="status-message">Verificando conexao com a API...</p>
+            <pre id="status-details">Aguardando resposta do servidor...</pre>
+        </div>
+        <footer>PIPP III - UEPB 2026</footer>
+    </div>
+
+    <script>
+        async function checkStatus() {
+            const statusBox = document.getElementById('status-box');
+            const statusMessage = document.getElementById('status-message');
+            const statusDetails = document.getElementById('status-details');
+
+            try {
+                const response = await fetch('/api/status');
+                const data = await response.json();
+
+                if (data.ok) {
+                    statusBox.className = '';
+                    statusMessage.textContent = 'API e Banco de Dados Conectados.';
+                    statusDetails.textContent = JSON.stringify(data, null, 2);
+                } else {
+                    throw new Error(data.message || 'A resposta da API indicou falha.');
+                }
+            } catch (error) {
+                statusBox.className = 'error';
+                statusMessage.textContent = 'Erro na Conexao';
+                statusDetails.textContent = 'Nao foi possivel conectar a API.\n\nDetalhes: ' + error.message + '\n\nVerifique se o servidor esta rodando (npm run dev) e se o banco D1 local foi configurado corretamente.';
+            }
+        }
+        window.onload = checkStatus;
+    </script>
+</body>
+</html>

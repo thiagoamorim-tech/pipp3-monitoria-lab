@@ -1,0 +1,12 @@
+name = "pipp3-monitoria-lab"
+main = "src/index.js"
+compatibility_date = "2026-10-03"
+
+[assets]
+directory = "./public/"
+binding = "ASSETS"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "pipp3-monitoria-db"
+database_id ="b0edeb2d-7f84-4e5a-b2c2-82e73a698b08"
