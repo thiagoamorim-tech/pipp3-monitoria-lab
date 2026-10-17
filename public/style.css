@@ -1,0 +1,192 @@
+:root {
+    --bg-color: #050D2E;
+    --card-bg: #0B1E4B;
+    --text-main: #F8FAFC;
+    --text-muted: #94A3B8;
+    --primary: #4F46E5;
+    --primary-hover: #6366F1;
+    --success: #10B981;
+    --warning: #F59E0B;
+    --danger: #EF4444;
+}
+
+* { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+    font-family: system-ui, -apple-system, sans-serif; 
+}
+
+body { 
+    background-color: var(--bg-color); 
+    color: var(--text-main); 
+    padding: 20px; 
+    display: flex; 
+    justify-content: center; 
+}
+
+.container { 
+    width: 100%; 
+    max-width: 600px; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 20px; 
+}
+
+/* Header e Painel de Desempenho */
+.dashboard { 
+    background: var(--card-bg); 
+    padding: 20px; 
+    border-radius: 12px; 
+    border-left: 6px solid var(--text-muted); 
+    transition: border-color 0.3s;
+}
+
+.dashboard.verde { border-left-color: var(--success); }
+.dashboard.amarelo { border-left-color: var(--warning); }
+.dashboard.vermelho { border-left-color: var(--danger); }
+
+.dash-header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 10px; 
+}
+
+.dash-header h2 { font-size: 1.2rem; }
+
+.xp-badge { 
+    background: var(--primary); 
+    padding: 4px 12px; 
+    border-radius: 20px; 
+    font-weight: bold; 
+    font-size: 0.9rem; 
+}
+
+.status-msg { 
+    font-size: 0.9rem; 
+    color: var(--text-muted); 
+    margin-bottom: 15px; 
+}
+
+.stats-grid { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 10px; 
+}
+
+.stat-box { 
+    background: rgba(255,255,255,0.05); 
+    padding: 10px; 
+    border-radius: 8px; 
+    text-align: center; 
+}
+
+.stat-box span { 
+    display: block; 
+    font-size: 0.8rem; 
+    color: var(--text-muted); 
+}
+
+.stat-box strong { font-size: 1.2rem; }
+
+/* Lista de Quizzes */
+h3 { 
+    font-size: 1.1rem; 
+    margin-bottom: 10px; 
+    color: var(--text-main); 
+}
+
+.quiz-list { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 12px; 
+}
+
+.quiz-card {
+    background: var(--card-bg); 
+    padding: 15px; 
+    border-radius: 10px;
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    cursor: pointer; 
+    transition: 0.2s; 
+    border: 1px solid transparent;
+}
+
+.quiz-card:hover { 
+    border-color: var(--primary); 
+    transform: translateY(-2px); 
+}
+
+.quiz-card.completed { 
+    opacity: 0.5; 
+    cursor: not-allowed; 
+    border-left: 4px solid var(--success); 
+}
+
+.quiz-info h4 { font-size: 0.95rem; margin-bottom: 5px; }
+.quiz-info p { font-size: 0.8rem; color: var(--text-muted); }
+.quiz-xp { color: var(--success); font-weight: bold; font-size: 0.9rem; }
+
+/* Tela de Responder Quiz */
+#quiz-view { 
+    display: none; 
+    background: var(--card-bg); 
+    padding: 20px; 
+    border-radius: 12px; 
+}
+
+.back-btn { 
+    background: none; 
+    border: none; 
+    color: var(--text-muted); 
+    cursor: pointer; 
+    margin-bottom: 15px; 
+    font-size: 0.9rem; 
+}
+
+.back-btn:hover { color: var(--text-main); }
+
+.question { 
+    font-size: 1.1rem; 
+    font-weight: bold; 
+    margin-bottom: 20px; 
+    line-height: 1.4; 
+}
+
+.options { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 10px; 
+}
+
+.option-btn {
+    background: rgba(255,255,255,0.05); 
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--text-main); 
+    padding: 15px; 
+    border-radius: 8px; 
+    text-align: left;
+    cursor: pointer; 
+    font-size: 0.95rem; 
+    transition: 0.2s;
+}
+
+.option-btn:hover { background: rgba(255,255,255,0.1); }
+.option-btn:disabled { cursor: not-allowed; opacity: 0.7; }
+
+.feedback { 
+    margin-top: 20px; 
+    padding: 15px; 
+    border-radius: 8px; 
+    display: none; 
+    font-weight: bold; 
+    text-align: center; 
+}
+
+.feedback.success { background: rgba(16, 185, 129, 0.2); color: var(--success); display: block; }
+.feedback.error { background: rgba(239, 68, 68, 0.2); color: var(--danger); display: block; }
+
+.loading { text-align: center; color: var(--text-muted); padding: 20px; }
