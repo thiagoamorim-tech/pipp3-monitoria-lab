@@ -76,7 +76,7 @@ Observacao sobre execucao local
 
 O comando npm run dev nao funciona em ambientes Android com proot (Termux). O runtime workerd depende do tcmalloc, que exige 48 bits de espaco de enderecamento, e o Android limita a 39 bits.
 
-Por isso, o desenvolvimento e feito direto na Cloudflare:
+Por isso, o desenvolvimento é feito direto na Cloudflare:
 
 · Publicar alteracoes no Worker: npm run deploy
 · Aplicar mudancas no banco: npm run d1:setup:remote
