@@ -87,14 +87,21 @@ Em computadores com Linux, macOS ou Windows, o npm run dev funciona normalmente.
 Rotas da API
 
 · GET /: healthcheck simples da API
+
 · GET /api/status: testa a conexao com o banco D1 usando um SELECT 1
+
 · GET /api/quizzes: lista os quizzes cadastrados no banco
+
 · POST /api/responder: recebe a resposta do aluno, salva o progresso e soma o XP
+
 · GET /api/desempenho/:aluno_id: retorna os dados do aluno, media de acertos e o indicador de risco (Verde, Amarelo ou Vermelho)
 
 Proximos passos (Iteracao 2)
 
 · Implementar autenticacao de usuarios (Login)
+
 · Desenvolver o Painel do Monitor (listagem de alunos e acompanhamento)
+
 · Criar sistema de turmas e codigos de acesso
+
 · Refinar a interface (UI/UX)
