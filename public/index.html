@@ -1,47 +1,68 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MonitorIA - Aluno</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entrar | MonitorIA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
 
-    <div class="container">
-        <div id="dashboard" class="dashboard">
-            <div class="dash-header">
-                <h2 id="aluno-nome">Carregando...</h2>
-                <div class="xp-badge"><span id="aluno-xp">0</span> XP</div>
-            </div>
-            <p id="aluno-status" class="status-msg">Buscando diagnostico...</p>
-            <div class="stats-grid">
-                <div class="stat-box">
-                    <span>Quizzes Respondidos</span>
-                    <strong id="stat-total">0</strong>
-                </div>
-                <div class="stat-box">
-                    <span>Media de Acertos</span>
-                    <strong id="stat-media">0%</strong>
-                </div>
-            </div>
-        </div>
+  <div class="login-container">
+    <div class="login-card">
+      <div class="login-header">
+        <h1 id="form-title">Acesse sua conta</h1>
+        <p id="form-subtitle">Bem-vindo ao MonitorIA</p>
+      </div>
 
-        <div id="list-view">
-            <h3>Trilha de Estudos (Iteracao 1)</h3>
-            <div id="quiz-list" class="quiz-list">
-                <div class="loading">Carregando quizzes...</div>
-            </div>
-        </div>
+      <div id="error-message" class="error-msg"></div>
 
-        <div id="quiz-view">
-            <button class="back-btn" onclick="voltarParaLista()">Voltar para trilhas</button>
-            <div id="question-text" class="question"></div>
-            <div id="options-container" class="options"></div>
-            <div id="feedback-box" class="feedback"></div>
+      <!-- Formulário de Login -->
+      <form id="login-form">
+        <div class="form-group">
+          <label for="email">E-mail institucional</label>
+          <input type="email" id="email" class="form-control" placeholder="seu.nome@uepb.edu.br" required>
         </div>
+        <div class="form-group">
+          <label for="senha">Senha</label>
+          <input type="password" id="senha" class="form-control" placeholder="Sua senha" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Entrar</button>
+      </form>
+
+      <!-- Formulário de Cadastro (Escondido inicialmente) -->
+      <form id="register-form" style="display: none;">
+        <div class="form-group">
+          <label for="reg-nome">Nome completo</label>
+          <input type="text" id="reg-nome" class="form-control" placeholder="Seu nome" required>
+        </div>
+        <div class="form-group">
+          <label for="reg-email">E-mail institucional</label>
+          <input type="email" id="reg-email" class="form-control" placeholder="seu.nome@uepb.edu.br" required>
+        </div>
+        <div class="form-group">
+          <label for="reg-senha">Senha</label>
+          <input type="password" id="reg-senha" class="form-control" placeholder="Crie uma senha" required>
+        </div>
+        <div class="form-group">
+          <label for="reg-tipo">Perfil de Acesso</label>
+          <select id="reg-tipo" class="form-control" required>
+            <option value="ALUNO">Aluno</option>
+            <option value="MONITOR">Monitor</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Criar conta</button>
+      </form>
+
+      <div class="toggle-form">
+        <span id="toggle-text">Ainda não tem conta?</span> <a id="toggle-btn">Cadastre-se</a>
+      </div>
     </div>
+  </div>
 
-    <script src="app.js" defer></script>
+  <script src="/js/auth.js"></script>
 </body>
 </html>

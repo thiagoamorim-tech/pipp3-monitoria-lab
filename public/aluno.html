@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meu Painel | MonitorIA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="navbar-brand">MonitorIA</div>
+    <div class="navbar-user">
+      <button class="btn-outline" style="padding: 6px 12px; border-radius: var(--radius); border: 1px solid var(--border); background: transparent; cursor: pointer; margin-right: 10px;" onclick="abrirModalTurma()">Entrar em Turma</button>
+      <span id="nav-username">Carregando...</span>
+      <button class="btn-logout">Sair</button>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <aside>
+      <div id="performance-card" class="performance-card status-cinza">
+        <div class="perf-header">
+          <h2>Seu Progresso</h2>
+          <div class="badge-xp"><span id="xp-total">0</span> XP</div>
+        </div>
+        <p id="status-message" class="perf-status-text">Carregando dados...</p>
+        <div class="perf-stats">
+          <div class="stat-item"><span>Respondidos</span><strong id="stat-total">0</strong></div>
+          <div class="stat-item"><span>Aproveitamento</span><strong id="stat-media">0%</strong></div>
+        </div>
+      </div>
+    </aside>
+
+    <section>
+      <!-- VISÃO 1: LISTA DE TURMAS -->
+      <div id="view-turmas-aluno" class="quiz-section">
+        <h3>Minhas Turmas</h3>
+        <div id="turmas-aluno-list" class="quiz-grid">
+          <p style="color: var(--text-muted);">Carregando turmas...</p>
+        </div>
+      </div>
+
+      <!-- VISÃO 2: MÓDULOS DA TURMA -->
+      <div id="view-modulos" class="quiz-section" style="display: none;">
+        <button class="btn-back" style="margin-bottom: 16px;" onclick="voltarParaTurmasAluno()">Voltar para Turmas</button>
+        <h3 id="titulo-turma-atual">Módulos de Estudo</h3>
+        <div id="modulos-list" class="quiz-grid"></div>
+      </div>
+
+      <!-- VISÃO 3: QUIZZES DO MÓDULO -->
+      <div id="trilha-view" class="quiz-view" style="display: none;">
+        <button class="btn-back" onclick="voltarParaModulos()">Voltar para os Módulos</button>
+        <div class="quiz-view-header">
+          <h2 class="quiz-question" id="trilha-title-text" style="font-size: 1.5rem;"></h2>
+          <p id="trilha-desc-text" style="color: var(--text-muted); margin-bottom: 24px;"></p>
+        </div>
+        <div id="trilha-quizzes-container" class="quiz-options"></div>
+      </div>
+
+      <!-- VISÃO 4: RESOLVER QUIZ -->
+      <div id="quiz-view" class="quiz-view">
+        <button class="btn-back" onclick="voltarParaTrilha()">Voltar para os Quizzes</button>
+        <div class="quiz-view-header">
+          <h2 class="quiz-question" id="question-text"></h2>
+        </div>
+        <div id="options-container" class="quiz-options"></div>
+        <div id="feedback-box" class="feedback-alert"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal Entrar na Turma -->
+  <div id="modal-turma-aluno" class="modal-overlay">
+    <div class="modal-content" style="text-align: left;">
+      <h2 style="margin-bottom: 20px;">Entrar em uma Turma</h2>
+      <div class="form-group">
+        <label for="codigo-turma">Código de Acesso</label>
+        <input type="text" id="codigo-turma" class="form-control" placeholder="Ex: A4F9C2" style="text-transform: uppercase;" required>
+      </div>
+      <div id="erro-turma-aluno" class="error-msg" style="display: none; margin-bottom: 15px;"></div>
+      <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <button class="btn btn-outline" onclick="fecharModalTurma()">Cancelar</button>
+        <button class="btn btn-primary" onclick="entrarTurma()">Entrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Conclusão de Módulo -->
+  <div id="modal-conclusao" class="modal-overlay">
+    <div class="modal-content">
+      <div id="modal-icon" class="modal-icon">!</div>
+      <h2 id="modal-title">Módulo Concluído!</h2>
+      <p id="modal-desc">Você concluiu todas as atividades desta trilha.</p>
+      <button class="btn btn-primary" onclick="fecharModalConclusao()">Entendi</button>
+    </div>
+  </div>
+
+  <script src="/js/aluno.js"></script>
+</body>
+</html>

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel do Monitor | MonitorIA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .monitor-table { width: 100%; border-collapse: collapse; background: var(--surface); border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); }
+    .monitor-table th { background: var(--bg-color); text-align: left; padding: 16px; font-size: 0.875rem; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+    .monitor-table td { padding: 16px; border-bottom: 1px solid var(--border); font-size: 0.95rem; vertical-align: middle; }
+    .monitor-table tr:last-child td { border-bottom: none; }
+    
+    .status-badge { display: inline-block; padding: 4px 12px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+    .status-badge.verde { background: #ECFDF5; color: #047857; }
+    .status-badge.amarelo { background: #FFFBEB; color: #B45309; }
+    .status-badge.vermelho { background: #FEF2F2; color: #B91C1C; }
+    .status-badge.cinza { background: #F1F5F9; color: #475569; }
+    
+    .main-content-monitor { max-width: 1100px; margin: 32px auto; padding: 0 24px; }
+    .monitor-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    .monitor-header h2 { font-size: 1.5rem; color: var(--text-main); font-weight: 700; }
+    .monitor-header p { color: var(--text-muted); font-size: 0.875rem; }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="navbar-brand">MonitorIA <span style="font-size: 0.75rem; font-weight: 400; background: #E0E7FF; color: #3730A3; padding: 2px 8px; border-radius: 4px; margin-left: 8px; vertical-align: middle;">Monitor</span></div>
+    <div class="navbar-user">
+      <span id="nav-username">Carregando...</span>
+      <button class="btn-logout">Sair</button>
+    </div>
+  </nav>
+
+  <main class="main-content-monitor">
+    
+    <div id="view-turmas">
+      <div class="monitor-header">
+        <div>
+          <h2>Minhas Turmas</h2>
+          <p>Gerencie suas turmas e compartilhe os códigos de acesso.</p>
+        </div>
+        <button class="btn btn-primary" style="width: auto; padding: 10px 20px;" onclick="abrirModalTurma()">+ Nova Turma</button>
+      </div>
+      <div id="turmas-list">
+        <p style="color: var(--text-muted);">Carregando turmas...</p>
+      </div>
+    </div>
+
+    <div id="view-alunos" style="display: none;">
+      <div class="monitor-header">
+        <div>
+          <button class="btn-back" style="margin-bottom: 8px;" onclick="voltarParaTurmas()">Voltar para Turmas</button>
+          <h2 id="turma-nome-title">Alunos</h2>
+          <p>Acompanhe o engajamento da turma.</p>
+        </div>
+        <button class="btn btn-primary" style="width: auto; padding: 10px 20px;" onclick="verTrilhas(turmaAtualId, turmaAtualNome)">Gerenciar Conteúdo</button>
+      </div>
+      <div style="overflow-x: auto;">
+        <table class="monitor-table">
+          <thead>
+            <tr><th>Aluno</th><th>XP Total</th><th>Quizzes Feitos</th><th>Média</th><th>Status</th></tr>
+          </thead>
+          <tbody id="alunos-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="view-trilhas" style="display: none;">
+      <div class="monitor-header">
+        <div>
+          <button class="btn-back" style="margin-bottom: 8px;" onclick="voltarParaAlunos()">Voltar para Alunos</button>
+          <h2 id="turma-trilhas-title">Módulos</h2>
+          <p>Gerencie as trilhas de estudo desta turma.</p>
+        </div>
+        <button class="btn btn-primary" style="width: auto; padding: 10px 20px;" onclick="abrirModalTrilha()">+ Novo Módulo</button>
+      </div>
+      <div id="trilhas-list">
+        <p style="color: var(--text-muted);">Carregando módulos...</p>
+      </div>
+    </div>
+
+    <div id="view-questoes" style="display: none;">
+      <div class="monitor-header">
+        <div>
+          <button class="btn-back" style="margin-bottom: 8px;" onclick="voltarParaTrilhasList()">Voltar para Módulos</button>
+          <h2 id="trilha-nome-title">Questões do Módulo</h2>
+          <p>Adicione e gerencie as perguntas desta trilha.</p>
+        </div>
+        <button class="btn btn-primary" style="width: auto; padding: 10px 20px;" onclick="abrirModalQuestao()">+ Nova Questão</button>
+      </div>
+      <div id="questoes-list">
+        <p style="color: var(--text-muted);">Carregando questões...</p>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Modal Criar Turma -->
+  <div id="modal-turma" class="modal-overlay">
+    <div class="modal-content" style="text-align: left;">
+      <h2 style="margin-bottom: 20px;">Criar Nova Turma</h2>
+      <div class="form-group">
+        <label for="nome-turma">Nome da Turma</label>
+        <input type="text" id="nome-turma" class="form-control" placeholder="Ex: ADS - Programação 1" required>
+      </div>
+      <div id="erro-turma" class="error-msg" style="display: none; margin-bottom: 15px;"></div>
+      <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <button class="btn btn-outline" onclick="fecharModalTurma()">Cancelar</button>
+        <button class="btn btn-primary" onclick="criarTurma()">Criar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Criar Trilha -->
+  <div id="modal-trilha" class="modal-overlay">
+    <div class="modal-content" style="text-align: left;">
+      <h2 style="margin-bottom: 20px;">Criar Novo Módulo</h2>
+      <div class="form-group">
+        <label for="titulo-trilha">Título do Módulo</label>
+        <input type="text" id="titulo-trilha" class="form-control" placeholder="Ex: Semana 1 - Lógica" required>
+      </div>
+      <div class="form-group">
+        <label for="desc-trilha">Descrição</label>
+        <input type="text" id="desc-trilha" class="form-control" placeholder="Breve descrição">
+      </div>
+      <div class="form-group">
+        <!-- AQUI ESTÁ O CAMPO DA DATA -->
+        <label for="data-trilha">Data de Entrega do Módulo</label>
+        <input type="date" id="data-trilha" class="form-control" required>
+      </div>
+      <div id="erro-trilha" class="error-msg" style="display: none; margin-bottom: 15px;"></div>
+      <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <button class="btn btn-outline" onclick="fecharModalTrilha()">Cancelar</button>
+        <button class="btn btn-primary" onclick="criarTrilha()">Criar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Criar Questão -->
+  <div id="modal-questao" class="modal-overlay">
+    <div class="modal-content" style="text-align: left; max-width: 600px; max-height: 90vh; overflow-y: auto;">
+      <h2 style="margin-bottom: 20px;">Adicionar Nova Questão</h2>
+      
+      <div class="form-group">
+        <label>Pergunta</label>
+        <input type="text" id="q-pergunta" class="form-control" placeholder="Digite a pergunta..." required>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <div class="form-group">
+          <label>Opção A</label>
+          <input type="text" id="q-opcao-a" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label>Opção B</label>
+          <input type="text" id="q-opcao-b" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label>Opção C</label>
+          <input type="text" id="q-opcao-c" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label>Opção D</label>
+          <input type="text" id="q-opcao-d" class="form-control" required>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <div class="form-group">
+          <label>Resposta Correta</label>
+          <select id="q-resposta" class="form-control" required>
+            <option value="">Selecione...</option>
+            <option value="A">Opção A</option>
+            <option value="B">Opção B</option>
+            <option value="C">Opção C</option>
+            <option value="D">Opção D</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>XP da Recompensa</label>
+          <input type="number" id="q-xp" class="form-control" value="10" min="5" step="5" required>
+        </div>
+      </div>
+
+      <div id="erro-questao" class="error-msg" style="display: none; margin-bottom: 15px;"></div>
+      
+      <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <button class="btn btn-outline" onclick="fecharModalQuestao()">Cancelar</button>
+        <button class="btn btn-primary" onclick="criarQuestao()">Salvar Questão</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/monitor.js"></script>
+</body>
+</html>
