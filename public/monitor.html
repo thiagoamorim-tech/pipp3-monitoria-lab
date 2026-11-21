@@ -4,30 +4,123 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Painel do Monitor | MonitorIA</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    .monitor-table { width: 100%; border-collapse: collapse; background: var(--surface); border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); }
-    .monitor-table th { background: var(--bg-color); text-align: left; padding: 16px; font-size: 0.875rem; color: var(--text-muted); border-bottom: 1px solid var(--border); }
-    .monitor-table td { padding: 16px; border-bottom: 1px solid var(--border); font-size: 0.95rem; vertical-align: middle; }
+    /* Tabela Moderna */
+    .monitor-table { width: 100%; border-collapse: separate; border-spacing: 0; background: var(--surface); border-radius: 12px; overflow: hidden; border: 1px solid #F1F5F9; }
+    .monitor-table th { background: #F8FAFC; text-align: left; padding: 16px 24px; font-size: 0.75rem; font-weight: 600; color: #64748B; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #E2E8F0; }
+    .monitor-table td { padding: 16px 24px; border-bottom: 1px solid #F1F5F9; font-size: 0.95rem; color: #334155; vertical-align: middle; transition: background 0.2s; }
     .monitor-table tr:last-child td { border-bottom: none; }
+    .monitor-table tbody tr:hover td { background-color: #F8FAFC; }
     
-    .status-badge { display: inline-block; padding: 4px 12px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
-    .status-badge.verde { background: #ECFDF5; color: #047857; }
-    .status-badge.amarelo { background: #FFFBEB; color: #B45309; }
-    .status-badge.vermelho { background: #FEF2F2; color: #B91C1C; }
-    .status-badge.cinza { background: #F1F5F9; color: #475569; }
+    /* Badges de Status Premium */
+    .status-badge { 
+      display: inline-flex; 
+      align-items: center; 
+      gap: 6px; 
+      padding: 6px 12px; 
+      border-radius: 999px; 
+      font-size: 0.75rem; 
+      font-weight: 600; 
+      letter-spacing: 0.02em;
+      border: 1px solid transparent;
+    }
+    .status-badge::before { 
+      content: ''; 
+      display: block; 
+      width: 6px; 
+      height: 6px; 
+      border-radius: 50%; 
+    }
+    .status-badge.verde { background: #F0FDF4; color: #166534; border-color: #BBF7D0; }
+    .status-badge.verde::before { background: #22C55E; }
+    .status-badge.amarelo { background: #FEFCE8; color: #854D0E; border-color: #FEF08A; }
+    .status-badge.amarelo::before { background: #EAB308; }
+    .status-badge.vermelho { background: #FEF2F2; color: #991B1B; border-color: #FECACA; }
+    .status-badge.vermelho::before { background: #EF4444; }
+    .status-badge.cinza { background: #F8FAFC; color: #475569; border-color: #E2E8F0; }
+    .status-badge.cinza::before { background: #94A3B8; }
+
+    /* Cabeçalho */
+    .main-content-monitor { max-width: 1200px; margin: 40px auto; padding: 0 24px; }
+    .monitor-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; flex-wrap: wrap; gap: 15px; }
+    .monitor-header h2 { font-size: 1.75rem; color: #0F172A; font-weight: 700; letter-spacing: -0.02em; }
+    .monitor-header p { color: #64748B; font-size: 0.95rem; margin-top: 4px; }
+
+    /* Cards Tipográficos (Sem Ícones) */
+    .dashboard-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 32px; }
+    .dash-card { 
+      background: #FFFFFF; 
+      border-radius: 16px; 
+      padding: 24px 32px; 
+      display: flex; 
+      flex-direction: column;
+      justify-content: center;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(226, 232, 240, 0.6);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .dash-card:hover { transform: translateY(-3px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01); }
     
-    .main-content-monitor { max-width: 1100px; margin: 32px auto; padding: 0 24px; }
-    .monitor-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-    .monitor-header h2 { font-size: 1.5rem; color: var(--text-main); font-weight: 700; }
-    .monitor-header p { color: var(--text-muted); font-size: 0.875rem; }
+    .dash-card-label { 
+      font-size: 0.75rem; 
+      font-weight: 700; 
+      color: #64748B; 
+      text-transform: uppercase; 
+      letter-spacing: 0.1em; 
+      margin-bottom: 12px; 
+    }
+    .dash-card-value { 
+      font-size: 2.8rem; 
+      font-weight: 800; 
+      color: #0F172A; 
+      line-height: 1; 
+      letter-spacing: -0.04em; 
+    }
+    .dash-card-value.primary { color: #4F46E5; }
+    .dash-card-value.danger { color: #EF4444; }
+
+    /* Área de Gráficos */
+    .charts-area { display: grid; grid-template-columns: 1fr 2.5fr; gap: 24px; margin-bottom: 32px; align-items: start; }
+    .chart-container { 
+      background: #FFFFFF; border-radius: 16px; padding: 24px; height: 340px; 
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02); border: 1px solid #E2E8F0;
+    }
+    
+    .avatar-table { width: 36px; height: 36px; border-radius: 50%; background: #F1F5F9; border: 2px solid #E2E8F0; vertical-align: middle; margin-right: 12px; object-fit: cover; }
+
+    /* Abas Modernas */
+    .tabs { display: flex; gap: 32px; border-bottom: 2px solid #E2E8F0; margin-bottom: 24px; }
+    .tab { padding: 12px 0; font-weight: 600; font-size: 0.95rem; color: #64748B; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
+    .tab:hover { color: #0F172A; }
+    .tab.active { color: #4F46E5; border-bottom-color: #4F46E5; }
+
+    /* Ranking */
+    .ranking-list { display: flex; flex-direction: column; gap: 12px; }
+    .ranking-item { display: flex; align-items: center; padding: 16px 20px; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; gap: 20px; transition: transform 0.2s; }
+    .ranking-item:hover { transform: scale(1.01); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+    .ranking-pos { font-size: 1.1rem; font-weight: 800; color: #94A3B8; width: 32px; }
+    .ranking-item.top-1 .ranking-pos { color: #F59E0B; font-size: 1.4rem; }
+    .ranking-item.top-2 .ranking-pos { color: #94A3B8; font-size: 1.3rem; }
+    .ranking-item.top-3 .ranking-pos { color: #B45309; font-size: 1.2rem; }
+    .ranking-avatar { width: 44px; height: 44px; border-radius: 50%; background: #F1F5F9; border: 2px solid #E2E8F0; }
+    .ranking-name { font-weight: 600; flex: 1; color: #1E293B; }
+    .ranking-xp { font-weight: 800; color: #4F46E5; background: #EEF2FF; padding: 6px 14px; border-radius: 999px; font-size: 0.9rem; }
+
+    @media (max-width: 900px) {
+      .dashboard-cards { grid-template-columns: 1fr; }
+      .charts-area { grid-template-columns: 1fr; }
+      .dash-card-value { font-size: 2.2rem; }
+    }
   </style>
 </head>
 <body>
 
   <nav class="navbar">
-    <div class="navbar-brand">MonitorIA <span style="font-size: 0.75rem; font-weight: 400; background: #E0E7FF; color: #3730A3; padding: 2px 8px; border-radius: 4px; margin-left: 8px; vertical-align: middle;">Monitor</span></div>
+    <div class="navbar-brand">MonitorIA <span style="font-size: 0.75rem; font-weight: 500; background: #EEF2FF; color: #4F46E5; padding: 4px 10px; border-radius: 6px; margin-left: 8px; vertical-align: middle;">Monitor</span></div>
     <div class="navbar-user">
       <span id="nav-username">Carregando...</span>
       <button class="btn-logout">Sair</button>
@@ -42,155 +135,167 @@
           <h2>Minhas Turmas</h2>
           <p>Gerencie suas turmas e compartilhe os códigos de acesso.</p>
         </div>
-        <button class="btn btn-primary" style="width: auto; padding: 10px 20px;" onclick="abrirModalTurma()">+ Nova Turma</button>
+        <button class="btn btn-primary" style="width: auto; padding: 12px 24px; border-radius: 8px;" onclick="abrirModalTurma()">+ Nova Turma</button>
       </div>
-      <div id="turmas-list">
-        <p style="color: var(--text-muted);">Carregando turmas...</p>
-      </div>
+      <div id="turmas-list" class="quiz-grid"></div>
     </div>
 
     <div id="view-alunos" style="display: none;">
       <div class="monitor-header">
         <div>
-          <button class="btn-back" style="margin-bottom: 8px;" onclick="voltarParaTurmas()">Voltar para Turmas</button>
+          <button class="btn-back" style="margin-bottom: 12px; font-weight: 600;" onclick="voltarParaTurmas()">← Voltar para Turmas</button>
           <h2 id="turma-nome-title">Alunos</h2>
-          <p>Acompanhe o engajamento da turma.</p>
+          <p>Acompanhe o engajamento e o desempenho da turma.</p>
         </div>
-        <button class="btn btn-primary" style="width: auto; padding: 10px 20px;" onclick="verTrilhas(turmaAtualId, turmaAtualNome)">Gerenciar Conteúdo</button>
+        <div style="display: flex; gap: 12px;">
+          <button class="btn btn-outline" style="width: auto; padding: 10px 20px; border-radius: 8px;" onclick="verLoja(turmaAtualId, turmaAtualNome)">Gerenciar Loja</button>
+          <button class="btn btn-primary" style="width: auto; padding: 10px 20px; border-radius: 8px;" onclick="verTrilhas(turmaAtualId, turmaAtualNome)">Gerenciar Conteúdo</button>
+        </div>
       </div>
-      <div style="overflow-x: auto;">
-        <table class="monitor-table">
-          <thead>
-            <tr><th>Aluno</th><th>XP Total</th><th>Quizzes Feitos</th><th>Média</th><th>Status</th></tr>
-          </thead>
-          <tbody id="alunos-tbody"></tbody>
-        </table>
+
+      <!-- CARDS TIPOGRÁFICOS -->
+      <div class="dashboard-cards">
+        <div class="dash-card">
+          <div class="dash-card-label">Total de Alunos</div>
+          <div class="dash-card-value" id="card-total-alunos">0</div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-label">Média de XP da Turma</div>
+          <div class="dash-card-value primary" id="card-media-xp">0</div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-label">Alunos em Risco</div>
+          <div class="dash-card-value danger" id="card-alunos-risco">0</div>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active" onclick="mudarAbaMonitor('geral')">Lista e Gráficos</div>
+        <div class="tab" onclick="mudarAbaMonitor('ranking')">Ranking</div>
+      </div>
+
+      <div id="aba-geral">
+        <div class="charts-area">
+          <div class="chart-container">
+            <canvas id="graficoRisco"></canvas>
+          </div>
+          
+          <div style="background: #FFFFFF; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); border: 1px solid #E2E8F0; overflow: hidden;">
+            <table class="monitor-table" style="border: none;">
+              <thead>
+                <tr><th>Aluno</th><th>XP</th><th>Média</th><th>Status</th><th>Ações</th></tr>
+              </thead>
+              <tbody id="alunos-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div id="aba-ranking-monitor" style="display: none;">
+        <div id="ranking-list-monitor" class="ranking-list"></div>
       </div>
     </div>
 
     <div id="view-trilhas" style="display: none;">
       <div class="monitor-header">
         <div>
-          <button class="btn-back" style="margin-bottom: 8px;" onclick="voltarParaAlunos()">Voltar para Alunos</button>
+          <button class="btn-back" style="margin-bottom: 12px; font-weight: 600;" onclick="voltarParaAlunos()">← Voltar para Alunos</button>
           <h2 id="turma-trilhas-title">Módulos</h2>
           <p>Gerencie as trilhas de estudo desta turma.</p>
         </div>
-        <button class="btn btn-primary" style="width: auto; padding: 10px 20px;" onclick="abrirModalTrilha()">+ Novo Módulo</button>
+        <button class="btn btn-primary" style="width: auto; padding: 10px 20px; border-radius: 8px;" onclick="abrirModalTrilha()">+ Novo Módulo</button>
       </div>
-      <div id="trilhas-list">
-        <p style="color: var(--text-muted);">Carregando módulos...</p>
-      </div>
+      <div id="trilhas-list" class="quiz-grid"></div>
     </div>
 
     <div id="view-questoes" style="display: none;">
       <div class="monitor-header">
         <div>
-          <button class="btn-back" style="margin-bottom: 8px;" onclick="voltarParaTrilhasList()">Voltar para Módulos</button>
+          <button class="btn-back" style="margin-bottom: 12px; font-weight: 600;" onclick="voltarParaTrilhasList()">← Voltar para Módulos</button>
           <h2 id="trilha-nome-title">Questões do Módulo</h2>
           <p>Adicione e gerencie as perguntas desta trilha.</p>
         </div>
-        <button class="btn btn-primary" style="width: auto; padding: 10px 20px;" onclick="abrirModalQuestao()">+ Nova Questão</button>
+        <button class="btn btn-primary" style="width: auto; padding: 10px 20px; border-radius: 8px;" onclick="abrirModalQuestao()">+ Nova Questão</button>
       </div>
-      <div id="questoes-list">
-        <p style="color: var(--text-muted);">Carregando questões...</p>
+      <div id="questoes-list" class="quiz-grid"></div>
+    </div>
+
+    <div id="view-loja" style="display: none;">
+      <div class="monitor-header">
+        <div>
+          <button class="btn-back" style="margin-bottom: 12px; font-weight: 600;" onclick="voltarParaAlunos()">← Voltar para Alunos</button>
+          <h2 id="turma-loja-title">Loja de Recompensas</h2>
+          <p>Cadastre prêmios para os alunos trocarem por moedas.</p>
+        </div>
+        <button class="btn btn-primary" style="width: auto; padding: 10px 20px; border-radius: 8px;" onclick="abrirModalRecompensa()">+ Nova Recompensa</button>
       </div>
+      <div id="loja-list" class="quiz-grid"></div>
     </div>
 
   </main>
 
-  <!-- Modal Criar Turma -->
+  <!-- MODAIS -->
   <div id="modal-turma" class="modal-overlay">
     <div class="modal-content" style="text-align: left;">
       <h2 style="margin-bottom: 20px;">Criar Nova Turma</h2>
-      <div class="form-group">
-        <label for="nome-turma">Nome da Turma</label>
-        <input type="text" id="nome-turma" class="form-control" placeholder="Ex: ADS - Programação 1" required>
-      </div>
+      <div class="form-group"><label>Nome da Turma</label><input type="text" id="nome-turma" class="form-control" placeholder="Ex: ADS - Programação 1" required></div>
       <div id="erro-turma" class="error-msg" style="display: none; margin-bottom: 15px;"></div>
-      <div style="display: flex; gap: 10px; margin-top: 20px;">
-        <button class="btn btn-outline" onclick="fecharModalTurma()">Cancelar</button>
-        <button class="btn btn-primary" onclick="criarTurma()">Criar</button>
-      </div>
+      <div style="display: flex; gap: 10px; margin-top: 20px;"><button class="btn btn-outline" onclick="fecharModalTurma()">Cancelar</button><button class="btn btn-primary" onclick="criarTurma()">Criar</button></div>
     </div>
   </div>
 
-  <!-- Modal Criar Trilha -->
   <div id="modal-trilha" class="modal-overlay">
     <div class="modal-content" style="text-align: left;">
       <h2 style="margin-bottom: 20px;">Criar Novo Módulo</h2>
-      <div class="form-group">
-        <label for="titulo-trilha">Título do Módulo</label>
-        <input type="text" id="titulo-trilha" class="form-control" placeholder="Ex: Semana 1 - Lógica" required>
-      </div>
-      <div class="form-group">
-        <label for="desc-trilha">Descrição</label>
-        <input type="text" id="desc-trilha" class="form-control" placeholder="Breve descrição">
-      </div>
-      <div class="form-group">
-        <!-- AQUI ESTÁ O CAMPO DA DATA -->
-        <label for="data-trilha">Data de Entrega do Módulo</label>
-        <input type="date" id="data-trilha" class="form-control" required>
-      </div>
+      <div class="form-group"><label>Título do Módulo</label><input type="text" id="titulo-trilha" class="form-control" required></div>
+      <div class="form-group"><label>Descrição</label><input type="text" id="desc-trilha" class="form-control"></div>
+      <div class="form-group"><label>Data de Entrega</label><input type="date" id="data-trilha" class="form-control" required></div>
       <div id="erro-trilha" class="error-msg" style="display: none; margin-bottom: 15px;"></div>
-      <div style="display: flex; gap: 10px; margin-top: 20px;">
-        <button class="btn btn-outline" onclick="fecharModalTrilha()">Cancelar</button>
-        <button class="btn btn-primary" onclick="criarTrilha()">Criar</button>
-      </div>
+      <div style="display: flex; gap: 10px; margin-top: 20px;"><button class="btn btn-outline" onclick="fecharModalTrilha()">Cancelar</button><button class="btn btn-primary" onclick="criarTrilha()">Criar</button></div>
     </div>
   </div>
 
-  <!-- Modal Criar Questão -->
   <div id="modal-questao" class="modal-overlay">
     <div class="modal-content" style="text-align: left; max-width: 600px; max-height: 90vh; overflow-y: auto;">
       <h2 style="margin-bottom: 20px;">Adicionar Nova Questão</h2>
-      
-      <div class="form-group">
-        <label>Pergunta</label>
-        <input type="text" id="q-pergunta" class="form-control" placeholder="Digite a pergunta..." required>
-      </div>
-
+      <div class="form-group"><label>Pergunta</label><input type="text" id="q-pergunta" class="form-control" required></div>
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-        <div class="form-group">
-          <label>Opção A</label>
-          <input type="text" id="q-opcao-a" class="form-control" required>
-        </div>
-        <div class="form-group">
-          <label>Opção B</label>
-          <input type="text" id="q-opcao-b" class="form-control" required>
-        </div>
-        <div class="form-group">
-          <label>Opção C</label>
-          <input type="text" id="q-opcao-c" class="form-control" required>
-        </div>
-        <div class="form-group">
-          <label>Opção D</label>
-          <input type="text" id="q-opcao-d" class="form-control" required>
-        </div>
+        <div class="form-group"><label>Opção A</label><input type="text" id="q-opcao-a" class="form-control" required></div>
+        <div class="form-group"><label>Opção B</label><input type="text" id="q-opcao-b" class="form-control" required></div>
+        <div class="form-group"><label>Opção C</label><input type="text" id="q-opcao-c" class="form-control" required></div>
+        <div class="form-group"><label>Opção D</label><input type="text" id="q-opcao-d" class="form-control" required></div>
       </div>
-
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-        <div class="form-group">
-          <label>Resposta Correta</label>
-          <select id="q-resposta" class="form-control" required>
-            <option value="">Selecione...</option>
-            <option value="A">Opção A</option>
-            <option value="B">Opção B</option>
-            <option value="C">Opção C</option>
-            <option value="D">Opção D</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>XP da Recompensa</label>
-          <input type="number" id="q-xp" class="form-control" value="10" min="5" step="5" required>
-        </div>
+        <div class="form-group"><label>Resposta Correta</label><select id="q-resposta" class="form-control" required><option value="">Selecione...</option><option value="A">Opção A</option><option value="B">Opção B</option><option value="C">Opção C</option><option value="D">Opção D</option></select></div>
+        <div class="form-group"><label>XP da Recompensa</label><input type="number" id="q-xp" class="form-control" value="10" min="5" step="5" required></div>
       </div>
-
       <div id="erro-questao" class="error-msg" style="display: none; margin-bottom: 15px;"></div>
-      
-      <div style="display: flex; gap: 10px; margin-top: 20px;">
-        <button class="btn btn-outline" onclick="fecharModalQuestao()">Cancelar</button>
-        <button class="btn btn-primary" onclick="criarQuestao()">Salvar Questão</button>
+      <div style="display: flex; gap: 10px; margin-top: 20px;"><button class="btn btn-outline" onclick="fecharModalQuestao()">Cancelar</button><button class="btn btn-primary" onclick="criarQuestao()">Salvar</button></div>
+    </div>
+  </div>
+
+  <div id="modal-intervencao" class="modal-overlay">
+    <div class="modal-content" style="text-align: left;">
+      <h2 style="margin-bottom: 20px;">Intervir com Aluno</h2>
+      <div class="form-group"><label>Tipo de Ação</label><select id="int-tipo" class="form-control" onchange="toggleCamposIntervencao()"><option value="MENSAGEM">Mensagem</option><option value="AGENDAMENTO">Agendamento</option></select></div>
+      <div class="form-group" id="div-mensagem"><label>Mensagem</label><textarea id="int-mensagem" class="form-control" rows="3"></textarea></div>
+      <div id="div-agendamento" style="display: none;">
+        <div class="form-group"><label>Data e Hora</label><input type="datetime-local" id="int-data" class="form-control"></div>
+        <div class="form-group"><label>Link</label><input type="url" id="int-link" class="form-control" placeholder="https://..."></div>
       </div>
+      <div id="erro-intervencao" class="error-msg" style="display: none; margin-bottom: 15px;"></div>
+      <div style="display: flex; gap: 10px; margin-top: 20px;"><button class="btn btn-outline" onclick="fecharModalIntervencao()">Cancelar</button><button class="btn btn-primary" onclick="salvarIntervencao()">Enviar</button></div>
+    </div>
+  </div>
+
+  <div id="modal-recompensa" class="modal-overlay">
+    <div class="modal-content" style="text-align: left;">
+      <h2 style="margin-bottom: 20px;">Criar Recompensa</h2>
+      <div class="form-group"><label>Nome do Prêmio</label><input type="text" id="rec-nome" class="form-control" required></div>
+      <div class="form-group"><label>Descrição</label><input type="text" id="rec-desc" class="form-control"></div>
+      <div class="form-group"><label>Custo em Moedas</label><input type="number" id="rec-custo" class="form-control" value="50" min="10" step="10" required></div>
+      <div id="erro-recompensa" class="error-msg" style="display: none; margin-bottom: 15px;"></div>
+      <div style="display: flex; gap: 10px; margin-top: 20px;"><button class="btn btn-outline" onclick="fecharModalRecompensa()">Cancelar</button><button class="btn btn-primary" onclick="criarRecompensa()">Criar</button></div>
     </div>
   </div>
 

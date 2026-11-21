@@ -1,4 +1,7 @@
 -- Limpa as tabelas se elas já existirem
+DROP TABLE IF EXISTS inventario;
+DROP TABLE IF EXISTS recompensas;
+DROP TABLE IF EXISTS intervencoes;
 DROP TABLE IF EXISTS progresso_aluno;
 DROP TABLE IF EXISTS quizzes;
 DROP TABLE IF EXISTS trilhas;
@@ -14,6 +17,9 @@ CREATE TABLE usuarios (
   senha TEXT NOT NULL,
   tipo TEXT CHECK(tipo IN ('ALUNO', 'MONITOR', 'PROFESSOR')) NOT NULL,
   xp_total INTEGER DEFAULT 0,
+  moedas INTEGER DEFAULT 0,
+  avatar_estilo TEXT DEFAULT 'bottts',
+  avatares_desbloqueados TEXT DEFAULT 'bottts',
   criado_em DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -60,4 +66,33 @@ CREATE TABLE progresso_aluno (
   quiz_id INTEGER REFERENCES quizzes(id),
   acertou BOOLEAN,
   data_resposta DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabela de Intervenções (Mensagens e Agendamentos)
+CREATE TABLE intervencoes (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  aluno_id INTEGER REFERENCES usuarios(id),
+  monitor_id INTEGER REFERENCES usuarios(id),
+  tipo TEXT CHECK(tipo IN ('MENSAGEM', 'AGENDAMENTO')) NOT NULL,
+  mensagem TEXT,
+  data_agendamento DATETIME,
+  link_reuniao TEXT,
+  criado_em DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabela de Recompensas (Loja)
+CREATE TABLE recompensas (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  turma_id INTEGER REFERENCES turmas(id),
+  nome TEXT NOT NULL,
+  descricao TEXT,
+  custo_moedas INTEGER NOT NULL
+);
+
+-- Tabela de Inventário (Compras dos alunos)
+CREATE TABLE inventario (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  aluno_id INTEGER REFERENCES usuarios(id),
+  recompensa_id INTEGER REFERENCES recompensas(id),
+  data_compra DATETIME DEFAULT CURRENT_TIMESTAMP
 );

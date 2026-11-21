@@ -6,69 +6,120 @@
   <title>Meu Painel | MonitorIA</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .tabs { display: flex; gap: 20px; border-bottom: 2px solid var(--border); margin-bottom: 20px; }
+    .tab { padding: 10px 0; font-weight: 600; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: 0.2s; }
+    .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+    .tab:hover { color: var(--primary); }
+    
+    .avatar-img { width: 100px; height: 100px; border-radius: 50%; background: #F1F5F9; border: 3px solid var(--primary); margin: 0 auto 15px; display: block; }
+    .avatar-selector { display: flex; gap: 10px; justify-content: center; margin-top: 15px; }
+    .avatar-option { width: 40px; height: 40px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; background: #E2E8F0; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: bold; }
+    .avatar-option.selected { border-color: var(--primary); background: #E0E7FF; }
+    
+    .ranking-list { display: flex; flex-direction: column; gap: 10px; }
+    .ranking-item { display: flex; align-items: center; padding: 12px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); gap: 15px; }
+    .ranking-pos { font-size: 1.2rem; font-weight: 700; color: var(--text-muted); width: 30px; }
+    .ranking-item.top-1 .ranking-pos { color: #F59E0B; }
+    .ranking-item.top-2 .ranking-pos { color: #94A3B8; }
+    .ranking-item.top-3 .ranking-pos { color: #B45309; }
+    .ranking-avatar { width: 40px; height: 40px; border-radius: 50%; background: #F1F5F9; }
+    .ranking-name { font-weight: 600; flex: 1; }
+    .ranking-xp { font-weight: 700; color: var(--primary); }
+  </style>
 </head>
 <body>
 
   <nav class="navbar">
     <div class="navbar-brand">MonitorIA</div>
     <div class="navbar-user">
+      <span id="nav-moedas" style="font-weight: bold; color: var(--warning); margin-right: 10px;">0 Moedas</span>
       <button class="btn-outline" style="padding: 6px 12px; border-radius: var(--radius); border: 1px solid var(--border); background: transparent; cursor: pointer; margin-right: 10px;" onclick="abrirModalTurma()">Entrar em Turma</button>
       <span id="nav-username">Carregando...</span>
       <button class="btn-logout">Sair</button>
     </div>
   </nav>
 
-  <main class="main-content">
-    <aside>
-      <div id="performance-card" class="performance-card status-cinza">
-        <div class="perf-header">
-          <h2>Seu Progresso</h2>
-          <div class="badge-xp"><span id="xp-total">0</span> XP</div>
-        </div>
-        <p id="status-message" class="perf-status-text">Carregando dados...</p>
-        <div class="perf-stats">
-          <div class="stat-item"><span>Respondidos</span><strong id="stat-total">0</strong></div>
-          <div class="stat-item"><span>Aproveitamento</span><strong id="stat-media">0%</strong></div>
-        </div>
-      </div>
-    </aside>
+  <main style="max-width: 1100px; margin: 32px auto; padding: 0 24px;">
+    <div id="avisos-monitor" style="display: none; flex-direction: column; gap: 10px; margin-bottom: 20px;"></div>
 
-    <section>
-      <!-- VISÃO 1: LISTA DE TURMAS -->
-      <div id="view-turmas-aluno" class="quiz-section">
-        <h3>Minhas Turmas</h3>
-        <div id="turmas-aluno-list" class="quiz-grid">
-          <p style="color: var(--text-muted);">Carregando turmas...</p>
+    <div class="main-content" style="margin: 0; padding: 0;">
+      <!-- Coluna Esquerda: Perfil e Desempenho -->
+      <aside>
+        <div id="performance-card" class="performance-card status-cinza" style="text-align: center;">
+          <img id="profile-avatar" src="" alt="Avatar" class="avatar-img">
+          <div class="avatar-selector" id="avatar-selector"></div>
+          
+          <div class="perf-header" style="margin-top: 20px; border-top: 1px solid var(--border); padding-top: 15px;">
+            <h2>Seu Progresso</h2>
+            <div class="badge-xp"><span id="xp-total">0</span> XP</div>
+          </div>
+          <p id="status-message" class="perf-status-text">Carregando dados...</p>
+          <div class="perf-stats">
+            <div class="stat-item"><span>Respondidos</span><strong id="stat-total">0</strong></div>
+            <div class="stat-item"><span>Aproveitamento</span><strong id="stat-media">0%</strong></div>
+          </div>
         </div>
-      </div>
+      </aside>
 
-      <!-- VISÃO 2: MÓDULOS DA TURMA -->
-      <div id="view-modulos" class="quiz-section" style="display: none;">
-        <button class="btn-back" style="margin-bottom: 16px;" onclick="voltarParaTurmasAluno()">Voltar para Turmas</button>
-        <h3 id="titulo-turma-atual">Módulos de Estudo</h3>
-        <div id="modulos-list" class="quiz-grid"></div>
-      </div>
-
-      <!-- VISÃO 3: QUIZZES DO MÓDULO -->
-      <div id="trilha-view" class="quiz-view" style="display: none;">
-        <button class="btn-back" onclick="voltarParaModulos()">Voltar para os Módulos</button>
-        <div class="quiz-view-header">
-          <h2 class="quiz-question" id="trilha-title-text" style="font-size: 1.5rem;"></h2>
-          <p id="trilha-desc-text" style="color: var(--text-muted); margin-bottom: 24px;"></p>
+      <!-- Coluna Direita: Conteúdo (Abas) -->
+      <section>
+        <!-- Menu de Abas -->
+        <div id="menu-tabs" class="tabs" style="display: none;">
+          <div class="tab active" onclick="mudarAba('modulos')">Módulos</div>
+          <div class="tab" onclick="mudarAba('ranking')">Ranking</div>
+          <div class="tab" onclick="mudarAba('loja')">Loja</div>
         </div>
-        <div id="trilha-quizzes-container" class="quiz-options"></div>
-      </div>
 
-      <!-- VISÃO 4: RESOLVER QUIZ -->
-      <div id="quiz-view" class="quiz-view">
-        <button class="btn-back" onclick="voltarParaTrilha()">Voltar para os Quizzes</button>
-        <div class="quiz-view-header">
-          <h2 class="quiz-question" id="question-text"></h2>
+        <!-- ABA 1: TURMAS / MÓDULOS -->
+        <div id="aba-modulos">
+          <div id="view-turmas-aluno" class="quiz-section">
+            <h3>Minhas Turmas</h3>
+            <div id="turmas-aluno-list" class="quiz-grid">
+              <p style="color: var(--text-muted);">Carregando turmas...</p>
+            </div>
+          </div>
+
+          <div id="view-modulos" class="quiz-section" style="display: none;">
+            <button class="btn-back" style="margin-bottom: 16px;" onclick="voltarParaTurmasAluno()">Voltar para Turmas</button>
+            <h3 id="titulo-turma-atual">Módulos de Estudo</h3>
+            <div id="modulos-list" class="quiz-grid"></div>
+          </div>
+
+          <div id="trilha-view" class="quiz-view" style="display: none;">
+            <button class="btn-back" onclick="voltarParaModulos()">Voltar para os Módulos</button>
+            <div class="quiz-view-header">
+              <h2 class="quiz-question" id="trilha-title-text" style="font-size: 1.5rem;"></h2>
+              <p id="trilha-desc-text" style="color: var(--text-muted); margin-bottom: 24px;"></p>
+            </div>
+            <div id="trilha-quizzes-container" class="quiz-options"></div>
+          </div>
+
+          <div id="quiz-view" class="quiz-view">
+            <button class="btn-back" onclick="voltarParaTrilha()">Voltar para os Quizzes</button>
+            <div class="quiz-view-header">
+              <h2 class="quiz-question" id="question-text"></h2>
+            </div>
+            <div id="options-container" class="quiz-options"></div>
+            <div id="feedback-box" class="feedback-alert"></div>
+          </div>
         </div>
-        <div id="options-container" class="quiz-options"></div>
-        <div id="feedback-box" class="feedback-alert"></div>
-      </div>
-    </section>
+
+        <!-- ABA 2: RANKING -->
+        <div id="aba-ranking" style="display: none;">
+          <h3>Ranking da Turma</h3>
+          <p style="color: var(--text-muted); margin-bottom: 20px;">Veja quem está se destacando nos estudos!</p>
+          <div id="ranking-list" class="ranking-list"></div>
+        </div>
+
+        <!-- ABA 3: LOJA -->
+        <div id="aba-loja" style="display: none;">
+          <h3>Loja de Recompensas</h3>
+          <p style="color: var(--text-muted); margin-bottom: 20px;">Troque suas moedas por prêmios exclusivos!</p>
+          <div id="loja-aluno-list" class="quiz-grid"></div>
+        </div>
+      </section>
+    </div>
   </main>
 
   <!-- Modal Entrar na Turma -->
